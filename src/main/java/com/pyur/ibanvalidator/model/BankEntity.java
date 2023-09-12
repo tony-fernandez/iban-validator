@@ -25,11 +25,17 @@ public class BankEntity {
   @Column(name = "city")
   private String city;
 
-  @Column(name = "country")
-  private String country;
+  @Column(name = "country_name")
+  private String countryName;
+
+  @Column(name = "country_code")
+  private String countryCode;
 
   @Column(name = "name")
   private String name;
+
+  @Column(name = "short_name")
+  private String shortName;
 
   @Column(name = "postal_code")
   private String postalCode;

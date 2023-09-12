@@ -6,10 +6,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BankRepository extends JpaRepository<BankEntity, Long> {
 
-  List<BankEntity> findByBankCodeAndCountry(@Param("bankCode") String bankCode, @Param("country") String country);
+  Optional<BankEntity> findByBankCodeAndCountryCodeAndBicEndsWith(@Param("bankCode") String bankCode, @Param("countryCode") String countryCode, @Param("bic") String bic);
+
+  List<BankEntity> findByBankCodeAndCountryCode(@Param("bankCode") String bankCode, @Param("countryCode") String countryCode);
 
 }

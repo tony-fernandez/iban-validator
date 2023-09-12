@@ -1,9 +1,6 @@
 package com.pyur.ibanvalidator.service;
 
-import com.pyur.ibanvalidator.processor.CountryDataProcessor;
-import com.pyur.ibanvalidator.processor.DataProcessor;
-import com.pyur.ibanvalidator.processor.GermanDataProcessor;
-import com.pyur.ibanvalidator.processor.SwissDataProcessor;
+import com.pyur.ibanvalidator.processor.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class StartupService {
 
+  private final AustriaDataProcessor austriaDataProcessor;
   private final ExecutorService executorService;
   private final CountryDataProcessor countryDataProcessor;
   private final GermanDataProcessor germanDataProcessor;
@@ -30,8 +28,9 @@ public class StartupService {
   @PostConstruct
   public void init() {
     Map<String, DataProcessor> processors = new HashMap<>();
+    processors.put("austria.csv", austriaDataProcessor);
     processors.put("countries.csv", countryDataProcessor);
-    processors.put("germany.csv", germanDataProcessor);
+    processors.put("bundersbank.csv", germanDataProcessor);
     processors.put("swiss.csv", swissDataProcessor);
 
     List<CompletableFuture<Void>> allPurges = new ArrayList<>();

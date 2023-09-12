@@ -2,7 +2,6 @@ package com.pyur.ibanvalidator.processor;
 
 import com.pyur.ibanvalidator.model.BankEntity;
 import com.pyur.ibanvalidator.repository.BankRepository;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -16,28 +15,23 @@ import static com.pyur.ibanvalidator.util.ProcessorUtil.file;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SwissDataProcessor implements DataProcessor {
+public class AustriaDataProcessor implements DataProcessor {
 
   private final BankRepository bankRepository;
 
   public static void main(String[] args) {
-    log.info("Beginning Swiss processing...");
+    log.info("Beginning Austria processing...");
     long startTime = System.currentTimeMillis();
-    try (FileReader reader = new FileReader(file("swiss.csv"))) {
+    try (FileReader reader = new FileReader(file("austria.csv"))) {
       CSVFormat csvFormat = CSVFormat.DEFAULT
-              .withHeader("group","bank_code","branch_id","bank_code_new","sic_number","head_office_bank_code","bank_code_type","valid_from","sic","euro_sic","language","short_name","name","domicile_address","postal_address","post_code","city","phone","fax","phone_code","country_code","postal_account","swift")
+              .withHeader("main_institution_flag","identity_number","bank_code","institute_type","sector","company_register_number","name","street","post_code","city","postal_address_street","postal_address_post_code","postal_address_city","po_box","federal_state","phone_number","fax","e_mail","swift","home_page","foundation_date")
               .withSkipHeaderRecord(true);
 
       Iterable<CSVRecord> records = csvFormat.parse(reader);
 
       for (CSVRecord record : records) {
-
         String bic = record.get(SWIFT);
-
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(bic)) {
-
-        }
-
+        log.info(bic);
       }
 
     } catch (Exception e) {
@@ -51,12 +45,12 @@ public class SwissDataProcessor implements DataProcessor {
 
   @Override
   public void process(String fileName) {
-    log.info("Beginning Swiss processing...");
+    log.info("Beginning Austrian processing...");
     long startTime = System.currentTimeMillis();
     try (FileReader reader = new FileReader(file(fileName))) {
       CSVFormat csvFormat = CSVFormat.DEFAULT
-              .withHeader("group","bank_code","branch_id","bank_code_new","sic_number","head_office_bank_code","bank_code_type","valid_from","sic","euro_sic","language","short_name","name","domicile_address","postal_address","post_code","city","phone","fax","phone_code","country_code","postal_account","swift")
-          .withSkipHeaderRecord(true);
+              .withHeader("main_institution_flag","identity_number","bank_code","institute_type","sector","company_register_number","name","street","post_code","city","postal_address_street","postal_address_post_code","postal_address_city","po_box","federal_state","phone_number","fax","e_mail","swift","home_page","foundation_date")
+              .withSkipHeaderRecord(true);
 
       Iterable<CSVRecord> records = csvFormat.parse(reader);
 
@@ -75,25 +69,13 @@ public class SwissDataProcessor implements DataProcessor {
   private void bank(CSVRecord record) {
     BankEntity bank = new BankEntity();
 
-    String newBankCode = record.get(BANK_CODE_NEW);
-
-    if (StringUtils.isNotBlank(newBankCode)) {
-      bank.setBankCode(newBankCode);
-    } else {
-      bank.setBankCode(record.get(BANK_CODE));
-    }
-
-    if (bank.getBankCode().length() == 4) {
-      bank.setBankCode("0" + bank.getBankCode());
-    }
-
+    bank.setBankCode(record.get(BANK_CODE));
     bank.setBic(record.get(SWIFT));
     bank.setCity(record.get(CITY));
-    bank.setCountryName("Switzerland");
-    bank.setCountryCode("CH");
+    bank.setCountryName("Austria");
+    bank.setCountryCode("AT");
     bank.setPostalCode(record.get(POST_CODE));
     bank.setName(record.get(NAME));
-    bank.setShortName(record.get(SHORT_NAME));
     bankRepository.save(bank);
   }
 
